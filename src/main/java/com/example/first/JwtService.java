@@ -20,12 +20,14 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long expiration;
 
-    private SecretKey getSigningKey() {  //Reads the Base64 secret and creates a cryptographic key.
+    //Reads the Base64 secret and creates a cryptographic key.
+    private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(String username) { //Creates a signed JWT containing the username and expiration.
+    //Creates a signed JWT containing the username and expiration.
+    public String generateToken(String username) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
@@ -41,14 +43,16 @@ public class JwtService {
         return extractAllClaims(token).getSubject();
     }
 
-    public boolean isTokenValid(String token, String username) { //Checks the username and expiration after verifying the signature.
+    //Checks the username and expiration after verifying the signature.
+    public boolean isTokenValid(String token, String username) {
         Claims claims = extractAllClaims(token);
 
         return claims.getSubject().equals(username)
                 && claims.getExpiration().after(new Date());
     }
 
-    private Claims extractAllClaims(String token) { //Checks the username and expiration after verifying the signature.
+    //Checks the username and expiration after verifying the signature.
+    private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
